@@ -15,5 +15,11 @@ def get_total_fuel_requirements():
 def get_recursive_fuel_requirements():
     return sum(map(recursive_fuel_for_mass, get_module_weights()))
 
-print(get_total_fuel_requirements())
-print(get_recursive_fuel_requirements())
+def part1():
+    return get_total_fuel_requirements()
+
+def part2():
+    return get_recursive_fuel_requirements()
+
+print(part1())
+print(part2())
