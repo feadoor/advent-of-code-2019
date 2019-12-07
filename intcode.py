@@ -1,9 +1,11 @@
+from collections import deque
+
 class IntcodeVm:
 
-    def __init__(self, program, inputs):
-        self.program = program
+    def __init__(self, program, initial_inputs = []):
+        self.program = program[:]
         self.pc = 0
-        self.inputs = inputs
+        self.inputs = deque(initial_inputs)
 
     def __getitem__(self, index):
         return self.program[index]
@@ -45,7 +47,7 @@ class IntcodeVm:
 
     def opcode3(self, modes):
         dest = self.read()
-        self.write(dest, self.inputs.__next__())
+        self.write(dest, self.inputs.popleft())
 
     def opcode4(self, modes):
         return self.load(modes)
@@ -75,7 +77,11 @@ class IntcodeVm:
         opcode, modes = self.get_opcode()
         return getattr(self, 'opcode' + str(opcode))(modes)
 
+    def add_input(self, input):
+        self.inputs.append(input)
+
     def run(self):
         while self.program[self.pc] != 99:
             output = self.step()
-            if output is not None: yield output
+            if output is not None:
+                yield output

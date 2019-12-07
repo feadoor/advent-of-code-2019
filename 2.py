@@ -17,7 +17,7 @@ def part2():
     for a, b in itertools.product(range(100), range(100)):
         program = get_input()
         program[1], program[2] = a, b
-        vm = IntcodeVm(program, [])
+        vm = IntcodeVm(program)
         for _ in vm.run(): pass
         if vm[0] == 19690720:
             return 100 * a + b
