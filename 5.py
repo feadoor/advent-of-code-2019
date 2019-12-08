@@ -7,12 +7,12 @@ def get_input():
 
 def part1():
     program = get_input()
-    *_, output = IntcodeVm(program, [1]).run()
+    *_, output = IntcodeVm(program, [1]).outputs
     return output
 
 def part2():
     program = get_input()
-    *_, output = IntcodeVm(program, [5]).run()
+    *_, output = IntcodeVm(program, [5]).outputs
     return output
 
 print(part1())

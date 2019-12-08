@@ -3,6 +3,27 @@ from collections import deque
 class IntcodeVm:
 
     def __init__(self, program, initial_inputs = []):
+        self.runner = IntcodeRunner(program, initial_inputs)
+        self.inputs, self.outputs = self.runner.run()
+        self.inputs.send(None)
+
+    def __getitem__(self, index):
+        return self.runner[index]
+
+    @property
+    def memory(self):
+        return self.runner.program
+
+    def send(self, value):
+        self.inputs.send(value)
+
+    def receive(self):
+        return next(self.outputs)
+
+
+class IntcodeRunner:
+
+    def __init__(self, program, initial_inputs = []):
         self.program = program[:]
         self.pc = 0
         self.inputs = deque(initial_inputs)
@@ -81,7 +102,16 @@ class IntcodeVm:
         self.inputs.append(input)
 
     def run(self):
-        while self.program[self.pc] != 99:
-            output = self.step()
-            if output is not None:
-                yield output
+
+        def outputs():
+            while self.program[self.pc] != 99:
+                output = self.step()
+                if output is not None:
+                    yield output
+
+        def inputs():
+            while True:
+                value = yield
+                self.inputs.append(value)
+
+        return (inputs(), outputs())
