@@ -8,19 +8,18 @@ import qualified Data.Sequence as Seq
 
 -- Amplifier sequencing
 
-sequentialAmps :: Memory -> [Int] -> [[Int]]
-sequentialAmps m ps = outputs
+linkedAmps :: ([[Int]] -> [[Int]]) -> Memory -> [Int] -> [[Int]]
+linkedAmps link m ps = outputs
     where runningVms = zipWith run inputs vms
           vms = map (vm . const m) ps
-          inputs = zipWith (:) ps ([0] : outputs)
+          inputs = zipWith (:) ps (link outputs)
           outputs = map (snd . runWriter) runningVms
 
+sequentialAmps :: Memory -> [Int] -> [[Int]]
+sequentialAmps = linkedAmps ([0] : )
+
 loopedAmps :: Memory -> [Int] -> [[Int]]
-loopedAmps m ps = outputs
-    where runningVms = zipWith run inputs vms
-          vms = map (vm . const m) ps
-          inputs = zipWith (:) ps (([0] ++ last outputs) : outputs)
-          outputs = map (snd . runWriter) runningVms
+loopedAmps = linkedAmps ((:) <$> ((0 : ) . last) <*> id)
 
 -- Putting it all together
 
