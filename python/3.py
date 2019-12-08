@@ -52,10 +52,10 @@ def get_intersection_with_least_steps(wires):
     return min(sum(x[1]) for x in intersections)
 
 def part1():
-    print(get_nearest_intersection(get_input()))
+    return get_nearest_intersection(get_input())
 
 def part2():
-    print(get_intersection_with_least_steps(get_input()))
+    return get_intersection_with_least_steps(get_input())
 
-part1()
-part2()
+print(part1())
+print(part2())

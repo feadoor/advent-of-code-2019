@@ -19,7 +19,7 @@ sequentialAmps :: Memory -> [Int] -> [[Int]]
 sequentialAmps = linkedAmps ([0] : )
 
 loopedAmps :: Memory -> [Int] -> [[Int]]
-loopedAmps = linkedAmps ((:) <$> ((0 : ) . last) <*> id)
+loopedAmps = linkedAmps $ (:) <$> ((0 : ) . last) <*> id
 
 -- Putting it all together
 

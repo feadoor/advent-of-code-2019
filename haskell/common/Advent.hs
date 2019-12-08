@@ -1,5 +1,5 @@
 module Advent (
-    rawInput, inputLines, parsedInput, parsedLines, solve,
+    rawInput, inputLines, parsedInput, parsedLines, solve, PlainString(..),
     Parser, parseInt, parseLines
 ) where
 
@@ -46,6 +46,9 @@ parsedLines :: Parser a -> IO [a]
 parsedLines p = inputLines >>= traverse (parseS p)
 
 -- Solution running
+
+newtype PlainString = PlainString String
+instance Show PlainString where show (PlainString s) = s
 
 solve :: (Show s, Show t) => IO a -> (a -> s) -> (a -> t) -> IO ()
 solve readi p1 p2 = do
