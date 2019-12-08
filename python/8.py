@@ -2,7 +2,7 @@ ROWS, COLS = 25, 6
 SZ = ROWS * COLS
 
 def get_input():
-    with open('data/8.txt', 'r') as f:
+    with open('../data/8.txt', 'r') as f:
         for line in f:
             return layers(line)
 

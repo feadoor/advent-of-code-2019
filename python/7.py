@@ -2,7 +2,7 @@ from intcode import IntcodeVm
 from itertools import permutations
 
 def get_input():
-    with open('data/7.txt', 'r') as file:
+    with open('../data/7.txt', 'r') as file:
         for line in file:
             return list(map(int, line.split(',')))
 

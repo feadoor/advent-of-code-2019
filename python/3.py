@@ -8,7 +8,7 @@ def parse_wire(wire):
     return [parse_step(step) for step in steps]
 
 def get_input():
-    with open('data/3.txt', 'r') as file:
+    with open('../data/3.txt', 'r') as file:
         return [parse_wire(line.strip()) for line in file]
 
 def step(location, direction):
