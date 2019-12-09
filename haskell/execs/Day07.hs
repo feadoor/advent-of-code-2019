@@ -7,7 +7,7 @@ import Data.List
 -- Amplifier sequencing
 
 singleAmp :: Memory -> Int -> [Int] -> [Int]
-singleAmp mem phase inputs = fst . run (phase : inputs) $ vm mem
+singleAmp mem phase inputs = run (phase : inputs) $ vm mem
 
 sequential :: Memory -> [Int] -> [Int] -> [Int]
 sequential mem = foldl (flip (.)) id . map (singleAmp mem)

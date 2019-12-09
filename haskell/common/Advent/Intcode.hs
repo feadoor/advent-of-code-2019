@@ -1,6 +1,6 @@
 {-# Language RecordWildCards #-}
 
-module Advent.Intcode (Memory, Vm(..), parseMem, vm, run) where
+module Advent.Intcode (Memory, Vm(..), parseMem, vm, run, finalState) where
 
 import Advent (Parser, parseInt)
 
@@ -125,5 +125,8 @@ run' inputs v@Vm { .. } = case opcode v of
     99 -> return v
     x -> error $ "Unknown opcode " ++ show x ++ " at " ++ show pc
 
-run :: [Int] -> Vm -> ([Int], Vm)
-run inputs v = swap . runWriter $ run' inputs v
+run :: [Int] -> Vm -> [Int]
+run inputs = snd . runWriter . run' inputs
+
+finalState :: [Int] -> Vm -> Vm
+finalState inputs = fst . runWriter . run' inputs

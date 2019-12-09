@@ -11,7 +11,7 @@ setup :: Int -> Int -> Memory -> Memory
 setup a b = Seq.update 1 a . Seq.update 2 b
 
 output :: Int -> Int -> Memory -> Int
-output a b m = let Vm { mem = mem } = snd . run [] . vm . setup a b $ m
+output a b m = let Vm { mem = mem } = finalState [] . vm . setup a b $ m
                in mem `index` 0
 
 find :: Int -> Memory -> (Int, Int)
