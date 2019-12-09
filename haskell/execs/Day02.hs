@@ -1,11 +1,8 @@
-{-# Language RecordWildCards #-}
-
 import Advent
 import Advent.Intcode
 
 import Control.Applicative
-import Control.Monad.Writer
-import Data.Sequence (Seq)
+import Data.Sequence (Seq, index)
 import qualified Data.Sequence as Seq
 
 -- Inputs and outputs to a VM
@@ -14,8 +11,8 @@ setup :: Int -> Int -> Memory -> Memory
 setup a b = Seq.update 1 a . Seq.update 2 b
 
 output :: Int -> Int -> Memory -> Int
-output a b m = let Vm { mem = mem } = fst . runWriter . run [] . vm . setup a b $ m
-               in mem ! 0
+output a b m = let Vm { mem = mem } = snd . run [] . vm . setup a b $ m
+               in mem `index` 0
 
 find :: Int -> Memory -> (Int, Int)
 find x m = let output' m (a, b) = output a b m

@@ -1,10 +1,7 @@
 import Advent
 import Advent.Intcode
 
-import Control.Monad.Writer
 import Data.List
-import Data.Sequence (Seq)
-import qualified Data.Sequence as Seq
 
 -- Amplifier sequencing
 
@@ -13,7 +10,7 @@ linkedAmps link m ps = outputs
     where runningVms = zipWith run inputs vms
           vms = map (vm . const m) ps
           inputs = zipWith (:) ps (link outputs)
-          outputs = map (snd . runWriter) runningVms
+          outputs = map fst runningVms
 
 sequentialAmps :: Memory -> [Int] -> [[Int]]
 sequentialAmps = linkedAmps ([0] : )

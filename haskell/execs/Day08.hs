@@ -40,11 +40,11 @@ parseLayers = layers <$> parsePixels
 part1 :: [[Int]] -> Int
 part1 = ((*) <$> count 1 <*> count 2) . minimumBy (comparing $ count 0)
 
-part2 :: [[Int]] -> PlainString
-part2 = PlainString . unlines . map (map charFor) . arrange . squash
+part2 :: [[Int]] -> String
+part2 = unlines . map (map charFor) . arrange . squash
     where charFor x = if x == 0 then ' ' else 'X'
 
 readInput :: IO [[Int]]
 readInput = parsedInput parseLayers
 
-main = solve readInput part1 part2
+main = solve readInput part1 (PlainString . part2)
