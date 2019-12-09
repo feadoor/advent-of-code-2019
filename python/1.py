@@ -1,5 +1,5 @@
 def get_module_weights():
-    with open('../data/1.txt', 'r') as file:
+    with open('../data/01.txt', 'r') as file:
         return [int(line) for line in file]
 
 def fuel_for_mass(mass):

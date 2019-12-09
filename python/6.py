@@ -1,7 +1,7 @@
 from collections import defaultdict
 
 def get_input():
-    with open('../data/6.txt', 'r') as f:
+    with open('../data/06.txt', 'r') as f:
         return [tuple(line.strip().split(')')) for line in f]
 
 def get_orbits():

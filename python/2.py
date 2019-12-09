@@ -2,7 +2,7 @@ import itertools
 from intcode import IntcodeVm
 
 def get_input():
-    with open('../data/2.txt', 'r') as file:
+    with open('../data/02.txt', 'r') as file:
         for line in file:
             return list(map(int, line.split(',')))
 

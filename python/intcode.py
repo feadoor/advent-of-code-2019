@@ -21,11 +21,28 @@ class IntcodeVm:
         return next(self.outputs)
 
 
+class IntcodeMemory:
+
+    def __init__(self, memory):
+        self.memory = memory
+
+    def __getitem__(self, index):
+        if index > len(self.memory) - 1:
+            self.memory += [0] * (index - len(self.memory) + 1)
+        return self.memory[index]
+
+    def __setitem__(self, index, val):
+        if index > len(self.memory) - 1:
+            self.memory += [0] * (index - len(self.memory) + 1)
+        self.memory[index] = val
+
+
 class IntcodeRunner:
 
     def __init__(self, program, initial_inputs = []):
-        self.program = program[:]
+        self.program = IntcodeMemory(program[:])
         self.pc = 0
+        self.relative_base = 0
         self.inputs = deque(initial_inputs)
 
     def __getitem__(self, index):
@@ -35,18 +52,30 @@ class IntcodeRunner:
         self.pc += 1
         return self.program[self.pc - 1]
 
+    def read_dest(self, modes):
+        mode_type = modes.pop() if len(modes) > 0 else 0
+        if mode_type == 2:
+            return self.read() + self.relative_base
+        else:
+            return self.read()
+
     def load(self, modes):
         mode_type = modes.pop() if len(modes) > 0 else 0
-        if mode_type == 0:
-            return self.load_position()
-        else:
+        if mode_type == 2:
+            return self.load_relative()
+        elif mode_type == 1:
             return self.load_immediate()
+        else:
+            return self.load_position()
 
     def load_position(self):
         return self.program[self.read()]
 
     def load_immediate(self):
         return self.read()
+
+    def load_relative(self):
+        return self.program[self.read() + self.relative_base]
 
     def write(self, idx, val):
         self.program[idx] = val
@@ -59,37 +88,41 @@ class IntcodeRunner:
         return opcode, modes
 
     def opcode1(self, modes):
-        arg1, arg2, dest = self.load(modes), self.load(modes), self.read()
+        arg1, arg2, dest = self.load(modes), self.load(modes), self.read_dest(modes)
         self.write(dest, arg1 + arg2)
 
     def opcode2(self, modes):
-        arg1, arg2, dest = self.load(modes), self.load(modes), self.read()
+        arg1, arg2, dest = self.load(modes), self.load(modes), self.read_dest(modes)
         self.write(dest, arg1 * arg2)
 
     def opcode3(self, modes):
-        dest = self.read()
+        dest = self.read_dest(modes)
         self.write(dest, self.inputs.popleft())
 
     def opcode4(self, modes):
         return self.load(modes)
 
     def opcode5(self, modes):
-        src, dest = self.load(modes), self.load(modes)
+        src, target = self.load(modes), self.load(modes)
         if src != 0:
-            self.pc = dest
+            self.pc = target
 
     def opcode6(self, modes):
-        src, dest = self.load(modes), self.load(modes)
+        src, target = self.load(modes), self.load(modes)
         if src == 0:
-            self.pc = dest
+            self.pc = target
 
     def opcode7(self, modes):
-        arg1, arg2, dest = self.load(modes), self.load(modes), self.read()
+        arg1, arg2, dest = self.load(modes), self.load(modes), self.read_dest(modes)
         self.write(dest, 1 if arg1 < arg2 else 0)
 
     def opcode8(self, modes):
-        arg1, arg2, dest = self.load(modes), self.load(modes), self.read()
+        arg1, arg2, dest = self.load(modes), self.load(modes), self.read_dest(modes)
         self.write(dest, 1 if arg1 == arg2 else 0)
+
+    def opcode9(self, modes):
+        arg1 = self.load(modes)
+        self.relative_base += arg1
 
     def opcode99(self, modes):
         pass
