@@ -52,18 +52,19 @@ class IntcodeRunner:
         self.pc += 1
         return self.program[self.pc - 1]
 
+    def write(self, idx, val):
+        self.program[idx] = val
+        return val
+
     def read_dest(self, modes):
-        mode_type = modes.pop() if len(modes) > 0 else 0
-        if mode_type == 2:
-            return self.read() + self.relative_base
-        else:
-            return self.read()
+        mode = modes.pop() if len(modes) > 0 else 0
+        return self.read() + (self.relative_base if mode == 2 else 0)
 
     def load(self, modes):
-        mode_type = modes.pop() if len(modes) > 0 else 0
-        if mode_type == 2:
+        mode = modes.pop() if len(modes) > 0 else 0
+        if mode == 2:
             return self.load_relative()
-        elif mode_type == 1:
+        elif mode == 1:
             return self.load_immediate()
         else:
             return self.load_position()
@@ -76,10 +77,6 @@ class IntcodeRunner:
 
     def load_relative(self):
         return self.program[self.read() + self.relative_base]
-
-    def write(self, idx, val):
-        self.program[idx] = val
-        return val
 
     def get_opcode(self):
         raw_opcode = self.read()
