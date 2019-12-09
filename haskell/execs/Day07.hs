@@ -9,19 +9,19 @@ import Data.List
 singleAmp :: Memory -> Int -> [Int] -> [Int]
 singleAmp mem phase inputs = fst . run (phase : inputs) $ vm mem
 
-sequential :: [[Int] -> [Int]] -> [Int] -> [Int]
-sequential = foldl (flip (.)) id
+sequential :: Memory -> [Int] -> [Int] -> [Int]
+sequential mem = foldl (flip (.)) id . map (singleAmp mem)
 
-looped :: [[Int] -> [Int]] -> Int -> [Int]
-looped amps initial = fix (\inputs -> sequential amps (initial : inputs))
+looped :: Memory -> [Int] -> Int -> [Int]
+looped mem phases initial = fix (sequential mem phases . (initial :))
 
 -- Putting it all together
 
 part1 :: Memory -> Int
-part1 m = maximum . map (head . ($ [0]) . sequential . map (singleAmp m)) $ permutations [0..4]
+part1 m = maximum . map (head . ($ [0]) . sequential m) $ permutations [0..4]
 
 part2 :: Memory -> Int
-part2 m = maximum . map (last . ($ 0) . looped . map (singleAmp m)) $ permutations [5..9]
+part2 m = maximum . map (last . ($ 0) . looped m) $ permutations [5..9]
 
 readInput :: IO Memory
 readInput = parsedInput parseMem
