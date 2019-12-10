@@ -13,7 +13,7 @@ sequential :: [[Int] -> [Int]] -> [Int] -> [Int]
 sequential = foldr (.) id
 
 looped :: [[Int] -> [Int]] -> Int -> [Int]
-looped fs initial = fix (\inputs -> sequential fs $ (initial : inputs))
+looped fs initial = fix (sequential fs . (initial : ))
 
 -- Putting it all together
 
