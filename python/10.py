@@ -60,7 +60,6 @@ def part1():
 def part2():
     dead, asteroids = 0, get_asteroids()
     x, y = best_asteroid(asteroids)
-    print(list(destroyed_asteroids(asteroids, x, y)))
     (dx, dy) = next(a for idx, a in enumerate(destroyed_asteroids(asteroids, x, y)) if idx == 199)
     return 100 * dy + dx
 
