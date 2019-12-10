@@ -4,7 +4,6 @@ import Advent
 
 import Data.Function
 import Data.List
-import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Ord
 import qualified Data.Set as Set
