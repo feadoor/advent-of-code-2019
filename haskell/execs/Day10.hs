@@ -34,19 +34,15 @@ countVisibleFrom :: (Int, Int) -> [(Int, Int)] -> Int
 countVisibleFrom (x, y) = length . Set.fromList . map gradient . relativeTo (x, y)
 
 bestStation :: [(Int, Int)] -> (Int, Int)
-bestStation as = maximumBy (comparing $ flip countVisibleFrom as) $ as
-
-byGradient :: [(Int, Int)] -> Map (Int, Int) [(Int, Int)]
-byGradient as = Map.map (sortBy $ comparing $ uncurry ((,) `on` abs)) mapByGradient
-    where mapByGradient  = Map.fromListWith (++) asWithGradient
-          asWithGradient = map ((,) <$> gradient <*> pure) as
+bestStation asteroids = maximumBy (comparing $ flip countVisibleFrom asteroids) $ asteroids
 
 destructionOrder :: (Int, Int) -> [(Int, Int)] -> [(Int, Int)]
-destructionOrder (x, y) as = map (\(a, b) -> (a + x, b + y)) flattenedAsteroids
+destructionOrder (x, y) asteroids = map (\(a, b) -> (a + x, b + y)) flattenedAsteroids
     where flattenedAsteroids = concat $ transpose asteroidsInGradientOrder
-          asteroidsInGradientOrder = map (gradientMap Map.!) sortedGradients
-          sortedGradients = sortBy (comparing $ negate . angle) $ Map.keys gradientMap
-          gradientMap = byGradient $ relativeTo (x, y) as
+          asteroidsInGradientOrder = map (byGradient Map.!) sortedGradients
+          sortedGradients = sortBy (comparing $ negate . angle) $ Map.keys byGradient
+          byGradient = Map.fromListWith (++) $ map((,) <$> gradient <*> pure) relativeAsteroids
+          relativeAsteroids = relativeTo (x, y) asteroids
 
 -- Input parsing
 
@@ -68,13 +64,13 @@ parseAsteroids = coordinates <$> parseField
 -- Putting it all together
 
 part1 :: [(Int, Int)] -> Int
-part1 as = maximum . map (flip countVisibleFrom as) $ as
+part1 asteroids = maximum . map (flip countVisibleFrom asteroids) $ asteroids
 
 part2 :: [(Int, Int)] -> Int
-part2 as = let (x, y) = destroyed !! 199
-               destroyed = destructionOrder base as
-               base = bestStation as
-           in  100 * y + x
+part2 asteroids = 100 * y + x
+    where (x, y) = destroyed !! 199
+          destroyed = destructionOrder base asteroids
+          base = bestStation asteroids
 
 readInput = parsedInput parseAsteroids
 
