@@ -13,7 +13,7 @@ To run a Python solution, simply run `python XX.py` from the `python` subdirecto
 
 The Haskell solutions are written after I have a working Python solution, so they have the advantage of not having
 any code written until I already understand the problem and its solution quite well. They have the disadvantage of
-beign written by someone who isn't very good at Haskell.
+being written by someone who isn't very good at Haskell.
 
 To run a Haskell solution, make sure that you have `cabal` installed and run `cabal run DayXX` from the `haskell`
 subdirectory of this repository.
