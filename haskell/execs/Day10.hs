@@ -42,11 +42,11 @@ byGradient as = Map.map (sortBy $ comparing $ uncurry ((,) `on` abs)) mapByGradi
           asWithGradient = map ((,) <$> gradient <*> pure) as
 
 destructionOrder :: (Int, Int) -> [(Int, Int)] -> [(Int, Int)]
-destructionOrder base as = map (\(a, b) -> (a + fst base, b + snd base)) flattenedAsteroids
+destructionOrder (x, y) as = map (\(a, b) -> (a + x, b + y)) flattenedAsteroids
     where flattenedAsteroids = concat $ transpose asteroidsInGradientOrder
           asteroidsInGradientOrder = map (gradientMap Map.!) sortedGradients
           sortedGradients = sortBy (comparing $ negate . angle) $ Map.keys gradientMap
-          gradientMap = byGradient $ relativeTo base as
+          gradientMap = byGradient $ relativeTo (x, y) as
 
 -- Input parsing
 
