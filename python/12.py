@@ -1,5 +1,5 @@
 from functools import reduce
-from itertools import permutations
+from itertools import count, permutations
 import re
 
 moon_regex = re.compile('<x=([-\d]+), y=([-\d]+), z=([-\d]+)>')
@@ -44,15 +44,15 @@ def step(moons):
         for idx in range(len(moon.pos)):
             moon.pos[idx] += moon.vel[idx]
 
+# Process is reversible, so no need to worry about a tail
 def flattened_period(moons, idx):
-    seen = {}
     flattened_moons = [Moon([m.pos[idx]]) for m in moons]
+    starting_configuration = tuple((m.pos[0], m.vel[0]) for m in flattened_moons)
     steps = 0
-    while tuple((m.pos[0], m.vel[0]) for m in flattened_moons) not in seen:
-        seen[tuple((m.pos[0], m.vel[0]) for m in flattened_moons)] = steps
+    for steps in count(1):
         step(flattened_moons)
-        steps += 1
-    return steps
+        if tuple((m.pos[0], m.vel[0]) for m in flattened_moons) == starting_configuration:
+            return steps
 
 def gcd(x, y):
     while y != 0:
@@ -71,7 +71,6 @@ def part1():
 def part2():
     moons = get_input()
     periods = [flattened_period(moons, idx) for idx in range(3)]
-    # Process is reversible, so no tail to worry about
     return reduce(lcm, periods)
 
 print(part1())

@@ -8,9 +8,9 @@ import qualified Data.Set as Set
 
 -- Utilities
 
-data Rotation  = CW | CCW deriving Show
-data Direction = U | D | L | R deriving Show
-data Colour    = B | W deriving Show
+data Rotation  = CW | CCW
+data Direction = U | D | L | R
+data Colour    = B | W
 
 turn :: Rotation -> Direction -> Direction
 turn CW  U = R
