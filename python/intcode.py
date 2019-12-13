@@ -93,8 +93,12 @@ class IntcodeRunner:
         self.write(dest, arg1 * arg2)
 
     def opcode3(self, modes):
-        dest = self.read_dest(modes)
-        self.write(dest, self.inputs.popleft())
+        try:
+            input = self.inputs.popleft()
+            self.write(self.read_dest(modes), input)
+        except IndexError as e:
+            self.pc -= 1
+            raise e
 
     def opcode4(self, modes):
         return self.load(modes)
@@ -131,13 +135,21 @@ class IntcodeRunner:
     def add_input(self, input):
         self.inputs.append(input)
 
+    def needs_input(self):
+        opcode, _ = self.get_opcode()
+        self.pc -= 1
+        return opcode == 3 and len(self.inputs) == 0
+
     def run(self):
 
         def outputs():
             while self.program[self.pc] != 99:
-                output = self.step()
-                if output is not None:
-                    yield output
+                try:
+                    output = self.step()
+                    if output is not None:
+                        yield output
+                except IndexError:
+                    yield None
 
         def inputs():
             while True:
