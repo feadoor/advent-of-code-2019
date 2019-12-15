@@ -14,8 +14,8 @@ def opposite(d):
 
 def move(pos, d):
     x, y = pos
-    if d == 'N': return (x, y + 1)
-    elif d == 'S': return (x, y - 1)
+    if d == 'N': return (x, y - 1)
+    elif d == 'S': return (x, y + 1)
     elif d == 'E': return (x + 1, y)
     elif d == 'W': return (x - 1, y)
 

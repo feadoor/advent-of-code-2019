@@ -10,8 +10,13 @@ import qualified Data.Sequence as Seq
 setup :: Int -> Int -> Memory -> Memory
 setup a b = Seq.update 1 a . Seq.update 2 b
 
+finalState :: Vm -> Vm
+finalState vm = case step vm of
+    Step vm' -> finalState vm'
+    StepHalt -> vm
+
 output :: Int -> Int -> Memory -> Int
-output a b m = let Vm { mem = mem } = finalState [] . vm . setup a b $ m
+output a b m = let Vm { mem = mem } = finalState . vm . setup a b $ m
                in mem `index` 0
 
 find :: Int -> Memory -> (Int, Int)

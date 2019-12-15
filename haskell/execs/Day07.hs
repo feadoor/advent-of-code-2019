@@ -7,7 +7,7 @@ import Data.List
 -- Amplifier sequencing
 
 amps :: Memory -> [Int] -> [[Int] -> [Int]]
-amps = map . amp where amp mem phase inputs = run (phase : inputs) $ vm mem
+amps = map . amp where amp mem phase inputs = runner (vm mem) (phase : inputs)
 
 sequential :: [[Int] -> [Int]] -> [Int] -> [Int]
 sequential = foldr (.) id

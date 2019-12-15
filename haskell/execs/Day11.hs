@@ -59,20 +59,20 @@ paint W pos = Set.insert pos
 inputColour :: Position -> Field -> Colour
 inputColour pos field = if Set.member pos field then W else B
 
-step :: (Colour, Rotation) -> RobotState -> RobotState
-step (c, r) state@RobotState { .. } = RobotState { pos = newPos, dir = newDir, field = newField }
+tick :: (Colour, Rotation) -> RobotState -> RobotState
+tick (c, r) state@RobotState { .. } = RobotState { pos = newPos, dir = newDir, field = newField }
     where newPos   = move newDir pos
           newDir   = turn r dir
           newField = paint c pos field
 
 steps :: [(Colour, Rotation)] -> RobotState -> [RobotState]
 steps instructions state = state : steps' instructions state
-    where steps' (x:xs) state' = steps xs (step x state')
+    where steps' (x:xs) state' = steps xs (tick x state')
           steps' []     state' = []
 
 instructions :: Vm -> [Colour] -> [(Colour, Rotation)]
 instructions vm inputs = [(colour x, rotation y) | (x, y) <- pairs outputs]
-    where outputs = run (map colourCode inputs) vm
+    where outputs = runner vm (map colourCode inputs)
 
 allStates :: Vm -> RobotState -> [RobotState]
 allStates vm startState = states

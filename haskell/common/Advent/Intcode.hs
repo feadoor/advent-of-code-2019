@@ -1,6 +1,9 @@
 {-# Language RecordWildCards #-}
 
-module Advent.Intcode (Memory, Vm(..), parseMem, vm, run, finalState) where
+module Advent.Intcode (
+    Memory, Vm(..), parseMem, vm,
+    Step(..), step, Effect(..), effect, runner
+) where
 
 import Advent (Parser, parseInt)
 
@@ -80,11 +83,11 @@ op2 :: Vm -> Vm
 op2 v = let [p1, p2, p3] = map (flip param v) [1..3]
         in tick 4 . set (get p1 v * get p2 v) p3 $ v
 
-op3 :: Int -> Vm -> Vm
-op3 input v = let p1 = param 1 v in tick 2 . set input p1 $ v
+op3 :: Vm -> Int -> Vm
+op3 v input = let p1 = param 1 v in tick 2 . set input p1 $ v
 
-op4 :: Vm -> (Vm, [Int])
-op4 v = let p1 = param 1 v in (tick 2 v, [get p1 v])
+op4 :: Vm -> (Int, Vm)
+op4 v = let p1 = param 1 v in (get p1 v, tick 2 v)
 
 op5 :: Vm -> Vm
 op5 v = let [p1, p2] = map (flip param v) [1..2]
@@ -111,22 +114,42 @@ op8 v = let [p1, p2, p3] = map (flip param v) [1..3]
 op9 :: Vm -> Vm
 op9 v = let p1 = param 1 v in tick 2 . adjustBase (get p1 v) $ v
 
-run' :: [Int] -> Vm -> Writer [Int] Vm
-run' inputs v@Vm { .. } = case opcode v of
-    1  -> run' inputs $ op1 v
-    2  -> run' inputs $ op2 v
-    3  -> run' (tail inputs) $ op3 (head inputs) v
-    4  -> (writer $ op4 v) >>= run' inputs
-    5  -> run' inputs $ op5 v
-    6  -> run' inputs $ op6 v
-    7  -> run' inputs $ op7 v
-    8  -> run' inputs $ op8 v
-    9  -> run' inputs $ op9 v
-    99 -> return v
-    x -> error $ "Unknown opcode " ++ show x ++ " at " ++ show pc
+-- Running a VM one step at a time
 
-run :: [Int] -> Vm -> [Int]
-run inputs = snd . runWriter . run' inputs
+data Step = Step Vm | StepIn (Int -> Vm) | StepOut (Int, Vm) | StepHalt
 
-finalState :: [Int] -> Vm -> Vm
-finalState inputs = fst . runWriter . run' inputs
+step :: Vm -> Step
+step v = case opcode v of
+    1  -> Step     $ op1 v
+    2  -> Step     $ op2 v
+    3  -> StepIn   $ op3 v
+    4  -> StepOut  $ op4 v
+    5  -> Step     $ op5 v
+    6  -> Step     $ op6 v
+    7  -> Step     $ op7 v
+    8  -> Step     $ op8 v
+    9  -> Step     $ op9 v
+    99 -> StepHalt
+    x  -> error $ "Unknown opcode " ++ show x ++ " at " ++ show (pc v)
+
+-- Representing a VM as a sequence of input and output instructions
+
+data Effect = Input (Int -> Effect) | Output (Int, Effect) | Halt
+
+effect :: Vm -> Effect
+effect vm = case step vm of
+    Step vm'           -> effect vm'
+    StepIn f           -> Input (effect . f)
+    StepOut (out, vm') -> Output (out, effect vm')
+    StepHalt           -> Halt
+
+-- Representing a VM as a function from inputs to outputs
+
+runner' :: Effect -> [Int] -> [Int]
+runner' effect inputs = case effect of
+    Input f               -> runner' (f $ head inputs) $ tail inputs
+    Output (out, effect') -> out : runner' effect' inputs
+    Halt                  -> []
+
+runner :: Vm -> [Int] -> [Int]
+runner vm = runner' $ effect vm

@@ -4,10 +4,10 @@ import Advent.Intcode
 -- Putting it all together
 
 part1 :: Memory -> Int
-part1 = last . run [1] . vm
+part1 = last . ($ [1]) . runner . vm
 
 part2 :: Memory -> Int
-part2 = last . run [2] . vm
+part2 = last . ($ [2]) . runner . vm
 
 readInput :: IO Memory
 readInput = parsedInput parseMem
