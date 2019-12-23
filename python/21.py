@@ -15,7 +15,6 @@ def run_springscript(instructions):
 
     outputs = list(vm.outputs)
     if outputs[-1] > 255:
-        print(''.join(chr(c) for c in outputs[:-1]))
         print(outputs[-1])
     else:
         print(''.join(chr(c) for c in outputs))
