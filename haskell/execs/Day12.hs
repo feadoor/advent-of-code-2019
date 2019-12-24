@@ -1,5 +1,3 @@
-{-# Language RecordWildCards #-}
-
 import Advent
 
 import Control.Monad
